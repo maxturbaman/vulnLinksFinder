@@ -28,7 +28,7 @@ Automatically verifies if the vulnerable paths contained in `Privat.txt` actuall
 
 1. **Clone or download the project**
 ```bash
-cd d:\!PROJECTS\tools\vulnLinksFinder
+git clone https://github.com/maxturbaman/vulnLinksFinder.git
 ```
 
 2. **Install dependencies**
