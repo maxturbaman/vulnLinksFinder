@@ -1,180 +1,181 @@
 # VulnLinksFinder
 
-**Herramienta profesional para verificación de rutas vulnerables en sitios web**
+**Professional tool for vulnerability path scanning on websites**
 
-Verifica automáticamente si las rutas vulnerables contenidas en `Privat.txt` existen realmente en un sitio web, notificando las que responden con código HTTP 200.
+Automatically verifies if the vulnerable paths contained in `Privat.txt` actually exist on a website, notifying those that respond with HTTP 200 status code.
 
-## 🚀 Características
+## 🚀 Features
 
-- ✅ Verificación paralela de URLs (multi-threading)
-- ✅ Soporte para múltiples sitios simultáneamente
-- ✅ Métodos HTTP: GET y HEAD (HEAD más rápido)
-- ✅ Reintentos automáticos
-- ✅ Timeout configurable
-- ✅ Exportación a TXT, JSON y CSV
-- ✅ Filtrado por códigos de estado HTTP
-- ✅ Soporte para proxies
-- ✅ Control SSL/TLS
-- ✅ User-Agent personalizable
-- ✅ Modo verbose y silencioso
-- ✅ Estadísticas detalladas de ejecución
+- ✅ Parallel URL verification (multi-threading)
+- ✅ Support for multiple sites simultaneously
+- ✅ HTTP methods: GET and HEAD (HEAD faster)
+- ✅ Automatic retries
+- ✅ Configurable timeout
+- ✅ Export to TXT, JSON and CSV
+- ✅ Filtering by HTTP status codes
+- ✅ Proxy support
+- ✅ SSL/TLS control
+- ✅ Customizable User-Agent
+- ✅ Verbose and quiet modes
+- ✅ Detailed execution statistics
 
-## 📋 Requisitos
+## 📋 Requirements
 
 - Python 3.8+
 - pip
 
-## ⚙️ Instalación
+## ⚙️ Installation
 
-1. **Clonar o descargar el proyecto**
+1. **Clone or download the project**
 ```bash
 cd d:\!PROJECTS\tools\vulnLinksFinder
 ```
 
-2. **Instalar dependencias**
+2. **Install dependencies**
 ```bash
 pip install -r requirements.txt
 ```
 
-## 📖 Uso
+## 📖 Usage
 
-### Sintaxis General
+### General Syntax
 ```bash
-python main.py [-u URL | -l ARCHIVO] [opciones]
+python linkScanner.py [-u URL | -l FILE] [options]
 ```
 
-### Ejemplos Básicos
+### Basic Examples
 
-**Verificar una sola URL:**
+**Verify a single URL:**
 ```bash
-python main.py -u "http://example.com"
+python linkScanner.py -u "http://example.com"
 ```
 
-**Verificar múltiples URLs:**
+**Verify multiple URLs:**
 ```bash
-python main.py -u "http://site1.com,http://site2.com,http://site3.com"
+python linkScanner.py -u "http://site1.com,http://site2.com,http://site3.com"
 ```
 
-**Verificar desde archivo:**
+**Verify from file:**
 ```bash
-python main.py -l urls.txt
+python linkScanner.py -l urls.txt
 ```
 
-**Exportar resultados:**
+**Export results:**
 ```bash
-python main.py -u "http://example.com" -o results.txt
+python linkScanner.py -u "http://example.com" -o results.txt
 ```
 
-### Opciones Detalladas
+### Detailed Options
 
-#### Entrada (Requerido - usar una de estas)
+#### Input (Required - use one of these)
 
-| Opción | Descripción |
+| Option | Description |
 |--------|-------------|
-| `-u, --url URL` | URL o URLs separadas por coma |
-| `-l, --list ARCHIVO` | Archivo con lista de URLs (una por línea) |
+| `-u, --url URL` | Single URL or comma-separated URLs |
+| `-l, --list FILE` | File with URL list (one per line) |
 
-#### Salida y Formato
+#### Output and Format
 
-| Opción | Descripción | Default |
-|--------|-------------|---------|
-| `-o, --output ARCHIVO` | Archivo para exportar resultados | No exportar |
-| `-f, --format {txt,json,csv}` | Formato de exportación | txt |
-| `--all-results` | Exportar todos los resultados (no solo HTTP 200) | Solo 200 |
+| Option | Description | Default |
+|--------|-------------|----------|
+| `-o, --output FILE` | File to export results | No export |
+| `-f, --format {txt,json,csv}` | Export format | txt |
+| `--all-results` | Export all results (not just HTTP 200) | Only 200 |
 
-#### Rendimiento
+#### Performance
 
-| Opción | Descripción | Default |
-|--------|-------------|---------|
-| `-t, --threads N` | Número de hilos paralelos | 5 |
-| `--timeout N` | Timeout para requests (segundos) | 10 |
-| `--delay N` | Delay entre requests (segundos) | 0 |
-| `--retries N` | Reintentos por URL | 1 |
-| `--method {GET,HEAD}` | Método HTTP | HEAD |
+| Option | Description | Default |
+|--------|-------------|----------|
+| `-t, --threads N` | Number of parallel threads | 5 |
+| `--timeout N` | Timeout for requests (seconds) | 10 |
+| `--delay N` | Delay between requests (seconds) | 0 |
+| `--retries N` | Retries per URL | 1 |
+| `--method {GET,HEAD}` | HTTP method | HEAD |
 
-#### Configuración HTTP
+#### HTTP Configuration
 
-| Opción | Descripción |
+| Option | Description |
 |--------|-------------|
-| `--user-agent TEXTO` | User-Agent personalizado |
-| `--no-ssl` | Desactivar verificación SSL/TLS |
-| `--follow-redirects` | Seguir redirecciones | 
-| `--proxy URL` | Proxy a usar (ej: http://proxy:8080) |
+| `--user-agent TEXT` | Custom User-Agent |
+| `--no-ssl` | Disable SSL/TLS verification |
+| `--follow-redirects` | Follow redirects | 
+| `--proxy URL` | Proxy to use (e.g., http://proxy:8080) |
 
-#### Filtrado y Visualización
+#### Filtering and Display
 
-| Opción | Descripción |
+| Option | Description |
 |--------|-------------|
-| `--filter CÓDIGOS` | Filtrar por códigos HTTP separados por coma (ej: "200,404") |
-| `-v, --verbose` | Modo verbose (mostrar detalles durante ejecución) |
-| `-q, --quiet` | Modo silencioso (solo resultados finales) |
+| `--filter CODES` | Filter by HTTP codes separated by comma (e.g., "200,404") |
+| `-v, --verbose` | Verbose mode (show details during execution) |
+| `-q, --quiet` | Quiet mode (only final results) |
 
-#### Configuración de Archivos
+#### File Configuration
 
-| Opción | Descripción | Default |
-|--------|-------------|---------|
-| `--vuln-file ARCHIVO` | Archivo con rutas vulnerables | Privat.txt |
+| Option | Description | Default |
+|--------|-------------|----------|
+| `--vuln-file FILE` | File with vulnerable paths | Privat.txt |
 
-## 📊 Ejemplos Avanzados
+## 📊 Advanced Examples
 
-### 1. Verificación rápida con múltiples hilos
+### 1. Fast verification with multiple threads
 ```bash
-python main.py -l urls.txt -t 20 --method HEAD
+python linkScanner.py -l urls.txt -t 20 --method HEAD
 ```
 
-### 2. Exportar a JSON con todos los resultados
+### 2. Export to JSON with all results
 ```bash
-python main.py -u "http://example.com" -o results.json -f json --all-results
+python linkScanner.py -u "http://example.com" -o results.json -f json --all-results
 ```
 
-### 3. Verificación con proxy y reintentos
+### 3. Verification with proxy and retries
 ```bash
-python main.py -l urls.txt --proxy "http://proxy:8080" --retries 3 -o results.csv -f csv
+python linkScanner.py -l urls.txt --proxy "http://proxy:8080" --retries 3 -o results.csv -f csv
 ```
 
-### 4. Verificación con filtro personalizado (encontrar 200, 403 y 404)
+### 4. Verification with custom filter (find 200, 403 and 404)
 ```bash
-python main.py -u "http://example.com" --filter "200,403,404" -o results.txt --all-results
+python linkScanner.py -u "http://example.com" --filter "200,403,404" -o results.txt --all-results
 ```
 
-### 5. Verificación verbose con delay entre requests
+### 5. Verbose verification with delay between requests
 ```bash
-python main.py -l urls.txt -v --delay 0.5 --timeout 15
+python linkScanner.py -l urls.txt -v --delay 0.5 --timeout 15
 ```
 
-### 6. Ignorar errores SSL
+### 6. Ignore SSL errors
 ```bash
-python main.py -u "https://example.com" --no-ssl
+python linkScanner.py -u "https://example.com" --no-ssl
 ```
 
-### 7. Usar método GET (más lento pero más confiable)
+### 7. Use GET method (slower but more reliable)
 ```bash
-python main.py -l urls.txt --method GET --timeout 20
+python linkScanner.py -l urls.txt --method GET --timeout 20
 ```
 
-## 📁 Estructura de Archivos
+## 📁 File Structure
 
 ```
 vulnLinksFinder/
-├── main.py                    # Archivo principal
-├── requirements.txt           # Dependencias
-├── README.md                 # Este archivo
-├── Privat.txt               # Rutas vulnerables (archivo adjunto)
-├── list.txt                 # Archivo de ejemplo con URLs
+├── linkScanner.py             # Main file
+├── requirements.txt           # Dependencies
+├── README.md                  # This file
+├── Privat.txt                 # Vulnerable paths (included file)
+├── run.bat                    # Windows batch script
+├── run.sh                     # Linux/Mac shell script
 ├── vuln_checker/
 │   ├── __init__.py
-│   ├── url_extractor.py     # Carga de URLs y rutas
-│   ├── http_checker.py      # Verificación HTTP
-│   └── output_manager.py    # Exportación de resultados
-└── results/                 # Directorio para guardar resultados
+│   ├── url_extractor.py       # URL and path loading
+│   ├── http_checker.py        # HTTP verification
+│   └── output_manager.py      # Result export
+└── results/                   # Directory to save results
     ├── output.txt
     ├── results.json
     └── results.csv
 ```
 
-## 📝 Archivo de URLs
+## 📝 URL File Format
 
-Crear un archivo `urls.txt` con URLs (una por línea):
+Create a `urls.txt` file with URLs (one per line):
 
 ```
 http://site1.com
@@ -183,25 +184,25 @@ https://site3.org
 site4.com
 ```
 
-Las URLs se normalizarán automáticamente (se agregará `http://` si es necesario).
+URLs will be normalized automatically (http:// will be added if needed).
 
-## 📋 Formato de Salida
+## 📋 Output Formats
 
 ### TXT
 ```
-Reporte de Vulnerabilidades
-Fecha: 2026-01-12 15:30:45
+Vulnerability Report
+Date: 2026-01-12 15:30:45
 ================================================================================
 
 1. URL: http://example.com/shell.php
    Status: 200
-   Ruta vulnerable: shell.php
-   Tiempo respuesta: 0.25s
+   Vulnerable path: shell.php
+   Response time: 0.25s
 
 2. URL: http://example.com/admin.php
    Status: 200
-   Ruta vulnerable: admin.php
-   Tiempo respuesta: 0.18s
+   Vulnerable path: admin.php
+   Response time: 0.18s
 ```
 
 ### JSON
@@ -229,80 +230,80 @@ http://example.com/shell.php,200,ok,shell.php,0.25,
 http://example.com/admin.php,200,ok,admin.php,0.18,
 ```
 
-## 🔍 Interpretación de Resultados
+## 🔍 Result Interpretation
 
-| Código | Significado |
-|--------|------------|
-| 200 | ✅ **VULNERABLE** - Recurso encontrado y accesible |
-| 301/302 | 🔄 Redirección (se sigue automáticamente) |
-| 401/403 | 🔒 Acceso denegado (existe pero no accesible) |
-| 404 | ❌ No encontrado |
-| 500 | ⚠️ Error del servidor |
-| timeout | ⏱️ Sin respuesta en el tiempo límite |
-| error | ❌ Error de conexión |
+| Code | Meaning |
+|------|----------|
+| 200 | ✅ **VULNERABLE** - Resource found and accessible |
+| 301/302 | 🔄 Redirect (automatically followed) |
+| 401/403 | 🔒 Access denied (exists but not accessible) |
+| 404 | ❌ Not found |
+| 500 | ⚠️ Server error |
+| timeout | ⏱️ No response within time limit |
+| error | ❌ Connection error |
 
-## ⚡ Consejos de Rendimiento
+## ⚡ Performance Tips
 
-1. **Aumentar hilos para muchas URLs:**
+1. **Increase threads for many URLs:**
    ```bash
-   python main.py -l urls.txt -t 20 -t 50
+   python linkScanner.py -l urls.txt -t 50
    ```
 
-2. **Usar HEAD en lugar de GET (más rápido):**
+2. **Use HEAD instead of GET (faster):**
    ```bash
-   python main.py -l urls.txt --method HEAD
+   python linkScanner.py -l urls.txt --method HEAD
    ```
 
-3. **Reducir timeout si hay respuestas lentas:**
+3. **Reduce timeout if experiencing slow responses:**
    ```bash
-   python main.py -l urls.txt --timeout 5
+   python linkScanner.py -l urls.txt --timeout 5
    ```
 
-4. **Usar modo silencioso para no ralentizar:**
+4. **Use quiet mode to avoid slowdown:**
    ```bash
-   python main.py -l urls.txt -q -o results.json
+   python linkScanner.py -l urls.txt -q -o results.json
    ```
 
-## 🔐 Consideraciones de Seguridad
+## 🔐 Security Considerations
 
-- ⚠️ **Uso legal**: Solo usar en sitios que tengas permiso para auditar
-- 🛡️ **Respeta límites de rate**: Usa `--delay` para no saturar servidores
-- 🔒 **SSL**: Desactiva verificación SSL solo cuando sea necesario
-- 🔑 **Proxies**: Usa proxies anónimos si auditas sitios de terceros
-- 📝 **Registros**: Los resultados contienen URLs vulnerables - mantenlos seguros
+- ⚠️ **Legal use**: Only use on sites you have permission to audit
+- 🛡️ **Respect rate limits**: Use `--delay` to avoid saturating servers
+- 🔒 **SSL**: Disable SSL verification only when necessary
+- 🔑 **Proxies**: Use anonymous proxies if auditing third-party sites
+- 📝 **Logs**: Results contain vulnerable URLs - keep them secure
 
-## 🐛 Solución de Problemas
+## 🐛 Troubleshooting
 
-**Error: "Archivo no encontrado: Privat.txt"**
-- Asegúrate que `Privat.txt` está en el directorio raíz del proyecto
+**Error: "File not found: Privat.txt"**
+- Make sure `Privat.txt` is in the project root directory
 
-**Error: "Módulo no encontrado"**
-- Ejecuta: `pip install -r requirements.txt`
+**Error: "Module not found"**
+- Run: `pip install -r requirements.txt`
 
-**URLs muy lentas de verificar**
-- Aumenta hilos: `-t 20`
+**URLs taking too long to verify**
+- Increase threads: `-t 20`
 - Reduce timeout: `--timeout 5`
-- Usa modo HEAD: `--method HEAD`
+- Use HEAD method: `--method HEAD`
 
-**No se encuentran vulnerabilidades**
-- Verifica que las URLs sean correctas: `-v` para verbose
-- Comprueba la conectividad: `ping domain.com`
-- Prueba desactivar SSL: `--no-ssl`
+**No vulnerabilities found**
+- Verify URLs are correct: use `-v` for verbose
+- Check connectivity: `ping domain.com`
+- Try disabling SSL: `--no-ssl`
 
-## 📚 Dependencias
+## 📚 Dependencies
 
-- `requests`: Librería HTTP
-- `urllib3`: Soporte para HTTP
-- `colorama`: Colores en terminal (Windows compatible)
+- `requests`: HTTP library
+- `urllib3`: HTTP support
+- `colorama`: Terminal colors (Windows compatible)
 
-## 📄 Licencia
+## 📄 License
 
-Proyecto de auditoría de seguridad. Uso responsable.
+Security auditing project. Responsible use only.
 
-## ✨ Versión
+## ✨ Version
 
 **v1.0.0** - 2026-01-12
 
 ---
 
-**Creado con ❤️ para auditorías de seguridad éticas**
+**Created with ❤️ for ethical security audits**
