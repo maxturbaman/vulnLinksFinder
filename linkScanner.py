@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 import argparse
 import sys
@@ -129,6 +130,8 @@ Examples:
 
 def main():
     setup_colors()
+    
+    sys.stdout.reconfigure(encoding='utf-8', errors='replace')
     
     stop_event = threading.Event()
     

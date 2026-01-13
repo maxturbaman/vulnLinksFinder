@@ -37,6 +37,9 @@ class OutputManager:
             print(f"   Path: {result.get('vuln_path', 'N/A')}")
             print(f"   Time: {result['response_time']:.2f}s")
             
+            if result.get('possibly_false_positive'):
+                print(f"   {Fore.YELLOW}⚠️  Possible false positive (catch-all detected){Style.RESET_ALL}")
+            
             if result['error']:
                 print(f"   {Fore.RED}Error: {result['error']}{Style.RESET_ALL}")
             
@@ -46,6 +49,7 @@ class OutputManager:
     def print_summary(results: List[Dict], start_time: float, end_time: float):
         total = len(results)
         success = len([r for r in results if r['status_code'] == 200])
+        false_positives = len([r for r in results if r.get('possibly_false_positive')])
         errors = len([r for r in results if r['status'] == 'error'])
         timeouts = len([r for r in results if r['status'] == 'timeout'])
         
@@ -56,6 +60,8 @@ class OutputManager:
         print(f"{Fore.CYAN}{'='*80}{Style.RESET_ALL}")
         print(f"Total checked: {total}")
         print(f"{Fore.GREEN}✅ HTTP 200 (Vulnerable): {success}{Style.RESET_ALL}")
+        if false_positives > 0:
+            print(f"{Fore.YELLOW}⚠️  Possible false positives: {false_positives}{Style.RESET_ALL}")
         print(f"{Fore.RED}❌ Errors: {errors}{Style.RESET_ALL}")
         print(f"{Fore.YELLOW}⏱  Timeouts: {timeouts}{Style.RESET_ALL}")
         print(f"⏱  Total time: {elapsed:.2f}s")

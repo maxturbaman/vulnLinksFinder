@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 import time
 import threading
 from colorama import Fore, Style
+import hashlib
 
 
 class HTTPChecker:
@@ -47,6 +48,56 @@ class HTTPChecker:
         if not verify_ssl:
             import urllib3
             urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+        
+        self.catch_all_patterns = {}
+    
+    def detect_catch_all(self, base_url: str) -> Dict:
+        test_paths = [
+            '/xyzabc123_notexist_' + str(int(time.time())) + '.php',
+            '/zzz_impossible_' + str(int(time.time())) + '.txt',
+            '/nonexistent_' + hashlib.md5(str(time.time()).encode()).hexdigest()[:8] + '.jsp'
+        ]
+        
+        results = []
+        content_hashes = []
+        
+        for test_path in test_paths:
+            try:
+                test_url = base_url.rstrip('/') + test_path
+                response = requests.get(
+                    test_url,
+                    headers=self.headers,
+                    timeout=self.timeout,
+                    verify=self.verify_ssl,
+                    allow_redirects=self.follow_redirects,
+                    proxies=self.proxies,
+                    stream=True
+                )
+                
+                content_hash = hashlib.md5(response.content).hexdigest()
+                content_hashes.append(content_hash)
+                results.append({
+                    'path': test_path,
+                    'status': response.status_code,
+                    'content_hash': content_hash,
+                    'content_length': len(response.content)
+                })
+            except Exception as e:
+                results.append({'path': test_path, 'status': 'error', 'error': str(e)[:50]})
+        
+        unique_hashes = len(set([r.get('content_hash') for r in results if 'content_hash' in r]))
+        all_200 = all(r.get('status') == 200 for r in results)
+        
+        is_catch_all = all_200 and unique_hashes == 1
+        
+        return {
+            'base_url': base_url,
+            'is_catch_all': is_catch_all,
+            'test_results': results,
+            'all_return_200': all_200,
+            'unique_responses': unique_hashes
+        }
+    
     
     def check_url(self, url: str) -> Dict:
         if self.stop_event.is_set():
@@ -90,9 +141,18 @@ class HTTPChecker:
                         stream=True
                     )
                 
+                end_time = time.time()
+                response_time = end_time - start_time
+                
                 result['status_code'] = response.status_code
                 result['response_time'] = response_time
                 result['status'] = 'ok'
+                result['possibly_false_positive'] = False
+                
+                base_url = '/'.join(url.split('/')[:3])
+                if base_url in self.catch_all_patterns:
+                    if self.catch_all_patterns[base_url]['is_catch_all']:
+                        result['possibly_false_positive'] = True
                 
                 if self.verbose:
                     color = self._get_color_by_status(response.status_code)
@@ -128,6 +188,21 @@ class HTTPChecker:
                            num_threads: int = 5) -> List[Dict]:
         if base_urls is None:
             base_urls = urls
+        
+        print(f"\n{Fore.CYAN}Testing for catch-all patterns...{Style.RESET_ALL}")
+        for base_url in base_urls:
+            if base_url not in self.catch_all_patterns:
+                detection_result = self.detect_catch_all(base_url)
+                self.catch_all_patterns[base_url] = detection_result
+                
+                if detection_result['is_catch_all']:
+                    print(f"{Fore.YELLOW}⚠️  WARNING: {base_url} appears to have catch-all behavior{Style.RESET_ALL}")
+                    print(f"   All test paths returned 200 with identical content")
+                else:
+                    print(f"{Fore.GREEN}✓ {base_url} - Normal behavior (no catch-all detected){Style.RESET_ALL}")
+        
+        print()
+        
         
         urls_to_check = []
         for base_url in base_urls:
