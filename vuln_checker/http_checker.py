@@ -6,6 +6,9 @@ import time
 import threading
 from colorama import Fore, Style
 import hashlib
+import sys
+
+sys.stdout.reconfigure(encoding='utf-8', errors='replace')
 
 
 class HTTPChecker:
@@ -60,6 +63,7 @@ class HTTPChecker:
         
         results = []
         content_hashes = []
+        content_types = set()
         
         for test_path in test_paths:
             try:
@@ -74,13 +78,16 @@ class HTTPChecker:
                     stream=True
                 )
                 
+                content_type = response.headers.get('Content-Type', 'unknown')
+                content_types.add(content_type)
                 content_hash = hashlib.md5(response.content).hexdigest()
                 content_hashes.append(content_hash)
                 results.append({
                     'path': test_path,
                     'status': response.status_code,
                     'content_hash': content_hash,
-                    'content_length': len(response.content)
+                    'content_length': len(response.content),
+                    'content_type': content_type
                 })
             except Exception as e:
                 results.append({'path': test_path, 'status': 'error', 'error': str(e)[:50]})
@@ -95,7 +102,8 @@ class HTTPChecker:
             'is_catch_all': is_catch_all,
             'test_results': results,
             'all_return_200': all_200,
-            'unique_responses': unique_hashes
+            'unique_responses': unique_hashes,
+            'content_types': list(content_types)
         }
     
     
@@ -141,6 +149,20 @@ class HTTPChecker:
                         stream=True
                     )
                 
+                if self.method == "HEAD":
+                    content_type_check = requests.get(
+                        url,
+                        headers=self.headers,
+                        timeout=self.timeout,
+                        verify=self.verify_ssl,
+                        allow_redirects=self.follow_redirects,
+                        proxies=self.proxies,
+                        stream=True
+                    )
+                    content_type = content_type_check.headers.get('Content-Type', 'unknown')
+                else:
+                    content_type = response.headers.get('Content-Type', 'unknown')
+                
                 end_time = time.time()
                 response_time = end_time - start_time
                 
@@ -148,6 +170,15 @@ class HTTPChecker:
                 result['response_time'] = response_time
                 result['status'] = 'ok'
                 result['possibly_false_positive'] = False
+                result['content_type'] = content_type
+                
+                vuln_path = result.get('vuln_path', '')
+                
+                if response.status_code == 200:
+                    if ('.php' in vuln_path or '.asp' in vuln_path) and 'text/html' in content_type and 'application' not in content_type:
+                        result['possibly_false_positive'] = True
+                    elif '.txt' in vuln_path and 'text/html' in content_type:
+                        result['possibly_false_positive'] = True
                 
                 base_url = '/'.join(url.split('/')[:3])
                 if base_url in self.catch_all_patterns:
@@ -227,7 +258,15 @@ class HTTPChecker:
             
             for future in as_completed(futures):
                 result = future.result()
-                result['vuln_path'] = futures[future]
+                vuln_path = futures[future]
+                result['vuln_path'] = vuln_path
+                
+                if result.get('status_code') == 200:
+                    if ('.php' in vuln_path or '.asp' in vuln_path) and 'text/html' in result.get('content_type', '') and 'application' not in result.get('content_type', ''):
+                        result['possibly_false_positive'] = True
+                    elif '.txt' in vuln_path and 'text/html' in result.get('content_type', ''):
+                        result['possibly_false_positive'] = True
+                
                 results.append(result)
         
         return results
